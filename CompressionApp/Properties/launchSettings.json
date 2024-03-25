@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "CompressionApp": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\nnyland\\Documents\\CompressionTests\\gsCompressed.pdf\"\r\n\"C:\\Users\\nnyland\\Documents\\CompressionTests\\TEST_786.pdf\""
-    }
-  }
-}
