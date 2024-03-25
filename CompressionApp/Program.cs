@@ -1,6 +1,7 @@
 ﻿using HeyRed.Mime;
 using Humanizer.Bytes;
 using System.IO;
+using System.Text;
 
 namespace PDFCompress
 {
@@ -8,74 +9,52 @@ namespace PDFCompress
     {
         static void Main(string[] args)
         {
-            Header();
-
+            // see command line arguments in debug properties:
             try
             {
-                var path = string.Empty;
+                Console.WriteLine("/////////////////////// PDF Compressor //////////////////////////\n");
+                Console.WriteLine("This utility requires you to have Ghostscript installed and added\n" +
+                                  "to the system environmental path. Spaces in path may cause errors.\n");
 
-                if (args.Length == 0)
+                string outputPath;
+                string inputPath;
+                if (args.Length == 2)
                 {
-                    while (string.IsNullOrEmpty(path))
-                    {
-                        Console.Write("Please provide a file path: ");
-                        path = Console.ReadLine();
-                    }
+                    outputPath = args[0];
+                    inputPath = args[1];
                 }
                 else
                 {
-                    path = args[0];
+                    Console.Write("Please give the output path: ");
+                    outputPath = Console.ReadLine();
+                    Console.Write("Please give the input path: ");
+                    inputPath = Console.ReadLine();
                 }
 
-                if (!File.Exists(path))
+                if (!File.Exists(inputPath))
                 {
-                    Console.WriteLine("The given file path is invalid!");
+                    Console.WriteLine($"Input path does not exist: {inputPath}");
                     Environment.Exit(1);
                 }
 
-                var fileName = Path.GetFileName(path);
-                Console.WriteLine("Compressing PDF: " + fileName);
+                int exitCode = Compressor.Compress(outputPath, inputPath);
 
-                FileInfo fileInformation = new FileInfo(path);
-                string mimeType = MimeTypesMap.GetMimeType(path);
-                ByteSize fileSize = ByteSize.FromBytes(fileInformation.Length);
-
-                if (fileInformation.Extension == ".pdf" && mimeType == "application/pdf")
+                if (exitCode == 0)
                 {
-                    var comp = new Compressor();
-                    Console.WriteLine($"Compressing: {fileName}...");
-                    bool isCompressed = comp.Compress(path);
-
-                    if (isCompressed)
-                    {
-                        Console.WriteLine($"{fileName} is compressed!");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"An error occurred while compressing {fileName}");
-                        Environment.Exit(1);
-                    }
+                    Console.WriteLine("Compression successful.");
                 }
                 else
                 {
-                    Console.WriteLine("Wrong file type!");
-                    Environment.Exit(1);
+                    Console.WriteLine("Compression failed.");
                 }
+
+                Environment.Exit(exitCode);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Path incomplete or corrupted.");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Compression failed. Exception message: " + ex.Message);
                 Environment.Exit(1);
             }
-        }
-
-        static void Header()
-        {
-            Console.WriteLine("PDF Compressor");
-            Console.WriteLine("This utility requires you to have Ghostscript and BASH installed.");
-            Console.WriteLine("Build from source: dotnet build");
-            Console.WriteLine("Usage: ./CompressionApp [path to PDF]");
         }
     }
 }
