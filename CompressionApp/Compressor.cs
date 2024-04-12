@@ -9,17 +9,9 @@ namespace PDFCompress
 {
     class Compressor
     {
-        public static int Compress(string outputPath, string inputPath)
+        public static int Compress(string args)
         {
             int exitCode = 1;
-
-            string gsArgs2 = $"-q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite " +
-                $"-dAutoRotatePages=/All -sPAPERSIZE=letter -dPDFFitPage " +
-                $"-dPDFSETTINGS=/screen -dEmbedAllFonts=true -dSubsetFonts=true " +
-                $"-dColorImageDownsampleType=/Bicubic -dColorImageResolution=144 " +
-                $"-dGrayImageDownsampleType=/Bicubic -dGrayImageResolution=144 " +
-                $"-dMonoImageDownsampleType=/Bicubic -dMonoImageResolution=144 " +
-                $"-sOutputFile={outputPath} {inputPath}";
 
             try
             {
@@ -28,7 +20,7 @@ namespace PDFCompress
                 proc.StartInfo.RedirectStandardOutput = true;
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.FileName = @"C:\Program Files\gs\gs10.03.0\bin\gswin64c.exe";
-                proc.StartInfo.Arguments = gsArgs2;
+                proc.StartInfo.Arguments = args;
 
                 proc.Start();
                 

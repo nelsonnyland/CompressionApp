@@ -5,39 +5,36 @@ using System.Text;
 
 namespace PDFCompress
 {
+    /// <summary>
+    /// This utility requires you to have Ghostscript v10.03.0 installed and added to the system 
+    /// environmental path. See command line arguments in debug properties
+    /// </summary>
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            // see command line arguments in debug properties:
             try
             {
                 Console.WriteLine("/////////////////////// PDF Compressor //////////////////////////\n");
-                Console.WriteLine("This utility requires you to have Ghostscript installed and added\n" +
-                                  "to the system environmental path. Spaces in path may cause errors.\n");
 
-                string outputPath;
-                string inputPath;
-                if (args.Length == 2)
-                {
-                    outputPath = args[0];
-                    inputPath = args[1];
-                }
-                else
-                {
-                    Console.Write("Please give the output path: ");
-                    outputPath = Console.ReadLine();
-                    Console.Write("Please give the input path: ");
-                    inputPath = Console.ReadLine();
-                }
+                string inputPath = @"E:\nnyland\Desktop\INPUT.pdf";
+                string outputPath = @"E:\nnyland\Desktop\OUPUT.pdf";
 
                 if (!File.Exists(inputPath))
                 {
-                    Console.WriteLine($"Input path does not exist: {inputPath}");
-                    Environment.Exit(1);
+                    throw new FileNotFoundException($"Input path does not exist: {inputPath}");
                 }
 
-                int exitCode = Compressor.Compress(outputPath, inputPath);
+                string args = $"-q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite " +
+                    $"-dAutoRotatePages=/All -sPAPERSIZE=letter -dPDFFitPage " +
+                    $"-dPDFSETTINGS=/screen -dEmbedAllFonts=true -dSubsetFonts=true " +
+                    $"-dColorImageDownsampleType=/Bicubic -dColorImageResolution=144 " +
+                    $"-dGrayImageDownsampleType=/Bicubic -dGrayImageResolution=144 " +
+                    $"-dMonoImageDownsampleType=/Bicubic -dMonoImageResolution=144 " +
+                    $"-sOutputFile=\"{outputPath}\" \"{inputPath}\"";
+
+                // compress
+                int exitCode = Compressor.Compress(args);
 
                 if (exitCode == 0)
                 {
